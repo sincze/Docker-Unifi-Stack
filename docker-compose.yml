@@ -1,0 +1,58 @@
+# My Unifi Controller stack 
+#
+# Author: S. Incze
+#
+# Version 1.0 23-12-2020
+#
+# Based on: https://github.com/jacobalberty/unifi-docker/blob/master/docker-compose.yml
+#
+# Usage: 
+#
+# Issue a docker-compose up -d to bring up the stack
+
+version: '2.3'
+
+services:
+  controller:
+    image: "jacobalberty/unifi:6.0"
+   #image: "jacobalberty/unifi:arm32v7:6.0
+    container_name: unifi_controller
+    hostname: unifi
+    init: true
+    networks:
+      - unifi
+    restart: unless-stopped
+    volumes:
+      - unifi_dir:/unifi
+      - unifi_data:/unifi/data
+      - unifi_log:/unifi/log
+      - unifi_cert:/unifi/cert
+      - unifi_init:/unifi/init.d
+      - unifi_run:/var/run/unifi
+      # Mount local folder for backups and autobackups
+      - ./backup:/unifi/data/backup
+    user: unifi
+#    sysctls:
+#      net.ipv4.ip_unprivileged_port_start: 0
+    environment:
+      TZ: Europe/Amsterdam
+    ports:
+      - "3478:3478/udp" # STUN
+      - "6789:6789/tcp" # Speed test
+      - "8080:8080/tcp" # Device/ controller comm.
+      - "8443:8443/tcp" # Controller GUI/API as seen in a web browser
+      - "8880:8880/tcp" # HTTP portal redirection
+      - "8843:8843/tcp" # HTTPS portal redirection
+      - "10001:10001/udp" # AP discovery
+ 
+networks:
+  unifi:
+
+volumes:
+  unifi_dir:
+  unifi_data:
+  unifi_log:
+  unifi_cert:
+  unifi_init:
+  unifi_run:
+
